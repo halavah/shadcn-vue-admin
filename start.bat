@@ -7,6 +7,23 @@ REM 作者: AI Assistant
 REM 创建时间: 2025-10-27
 REM 版本: v1.0.0
 
+REM 临时设置 Node.js v22.19.0 环境 (仅影响当前批处理会话)
+set "NODE_PATH=C:\Users\troyesivens\.nvm\versions\node\v22.19.0"
+set "PATH=C:\Users\troyesivens\.nvm\versions\node\v22.19.0;%PATH%"
+
+REM 检查 Node.js v22.19.0 是否存在
+if not exist "C:\Users\troyesivens\.nvm\versions\node\v22.19.0\node.exe" (
+    echo ❌ Node.js v22.19.0 未找到
+    echo 💡 请先安装 Node.js v22.19.0: nvm install 22.19.0
+    echo 💡 或在 Windows 上使用 nvm-windows: https://github.com/coreybutler/nvm-windows
+    pause
+    exit /b 1
+)
+
+echo 🔄 临时切换到 Node.js v22.19.0 (仅影响当前批处理会话)
+for /f "tokens=*" %%a in ('C:\Users\troyesivens\.nvm\versions\node\v22.19.0\node.exe --version') do set "NODE_VERSION=%%a"
+echo 当前版本: %NODE_VERSION%
+
 echo.
 echo 🚀 ShadCn Pro 应用启动脚本
 echo ==================================
@@ -57,11 +74,11 @@ if exist ".env.dev" (
 )
 
 REM 检查端口占用
-netstat -ano | findstr ":5176" | findstr "LISTENING" >nul 2>&1
+netstat -ano | findstr ":5173" | findstr "LISTENING" >nul 2>&1
 if !errorlevel! equ 0 (
-    set "PORT_STATUS=📡 端口 5176 已被占用"
+    set "PORT_STATUS=📡 端口 5173 已被占用"
 ) else (
-    set "PORT_STATUS=📡 端口 5176 可用"
+    set "PORT_STATUS=📡 端口 5173 可用"
 )
 
 REM 显示项目状态
@@ -75,7 +92,7 @@ echo.
 REM 首次运行时安装依赖
 if defined NEED_INSTALL (
     echo 📦 首次运行，正在安装依赖...
-    call npm install
+    call pnpm install
     if !errorlevel! neq 0 (
         echo ❌ 依赖安装失败，请检查网络连接
         pause
@@ -107,10 +124,10 @@ echo ==========================================
 echo 请选择要执行的操作：
 echo ==========================================
 echo.
-echo   1. 启动开发服务器 (npm run dev) [推荐]
-echo   2. 构建生产版本 (npm run build)
-echo   3. 预览生产版本 (npm run preview)
-echo   4. 安装/更新依赖 (npm install)
+echo   1. 启动开发服务器 (pnpm dev) [推荐]
+echo   2. 构建生产版本 (pnpm run build)
+echo   3. 预览生产版本 (pnpm run preview)
+echo   4. 安装/更新依赖 (pnpm install)
 echo   5. 清理缓存和重置
 echo   6. 退出
 echo.
@@ -135,30 +152,30 @@ echo 🔧 启动开发服务器...
 echo ==========================================
 echo.
 
-REM 强制关闭 5176 端口
-echo 🔍 检查端口 5176 占用情况...
-for /f "tokens=5" %%a in ('netstat -ano ^| findstr ":5176" ^| findstr "LISTENING"') do (
-    echo ⚠️  端口 5176 被进程 %%a 占用，正在关闭...
+REM 强制关闭 5173 端口
+echo 🔍 检查端口 5173 占用情况...
+for /f "tokens=5" %%a in ('netstat -ano ^| findstr ":5173" ^| findstr "LISTENING"') do (
+    echo ⚠️  端口 5173 被进程 %%a 占用，正在关闭...
     taskkill /F /PID %%a >nul 2>&1
     timeout /t 1 /nobreak >nul
-    echo ✅ 端口 5176 已释放
+    echo ✅ 端口 5173 已释放
     goto :port_freed_dev
 )
-echo ✅ 端口 5176 可用
+echo ✅ 端口 5173 可用
 :port_freed_dev
 echo.
 
-echo 📍 本地访问: http://localhost:5176/
-echo 🌐 网络访问: http://%LOCAL_IP%:5176/
-echo 🚪 监听地址: http://0.0.0.0:5176/
+echo 📍 本地访问: http://localhost:5173/
+echo 🌐 网络访问: http://%LOCAL_IP%:5173/
+echo 🚪 监听地址: http://0.0.0.0:5173/
 echo.
 echo 💡 按 Ctrl+C 停止服务器
-echo 💡 开发服务器运行在端口 5176 (0.0.0.0)
+echo 💡 开发服务器运行在端口 5173 (0.0.0.0)
 echo 🔓 认证已禁用，可直接使用所有功能
 echo.
 echo ==========================================
 echo.
-call npm run dev -- --host 0.0.0.0 --port 5176
+call pnpm dev --host 0.0.0.0 --port 5173
 goto :end
 
 REM ========== 选项 2: 构建生产版本 ==========
@@ -167,7 +184,7 @@ echo.
 echo 🏗️  构建生产版本...
 echo ==========================================
 echo.
-call npm run build
+call pnpm run build
 if !errorlevel! equ 0 (
     echo.
     echo ✅ 构建完成！构建文件位于 dist\ 目录
@@ -192,7 +209,7 @@ REM ========== 选项 3: 预览生产版本 ==========
 if not exist "dist\" (
     echo.
     echo ❌ 未找到构建文件，请先运行构建命令 (选项 2)
-    echo 💡 或直接运行: npm run build
+    echo 💡 或直接运行: pnpm run build && pnpm run preview
     echo.
     pause
     goto :menu
@@ -202,28 +219,28 @@ echo 👀 预览生产版本...
 echo ==========================================
 echo.
 
-REM 强制关闭 5176 端口
-echo 🔍 检查端口 5176 占用情况...
-for /f "tokens=5" %%a in ('netstat -ano ^| findstr ":5176" ^| findstr "LISTENING"') do (
-    echo ⚠️  端口 5176 被进程 %%a 占用，正在关闭...
+REM 强制关闭 5173 端口
+echo 🔍 检查端口 5173 占用情况...
+for /f "tokens=5" %%a in ('netstat -ano ^| findstr ":5173" ^| findstr "LISTENING"') do (
+    echo ⚠️  端口 5173 被进程 %%a 占用，正在关闭...
     taskkill /F /PID %%a >nul 2>&1
     timeout /t 1 /nobreak >nul
-    echo ✅ 端口 5176 已释放
+    echo ✅ 端口 5173 已释放
     goto :port_freed_preview
 )
-echo ✅ 端口 5176 可用
+echo ✅ 端口 5173 可用
 :port_freed_preview
 echo.
 
-echo 📍 本地访问: http://localhost:5176/
-echo 🌐 网络访问: http://%LOCAL_IP%:5176/
-echo 🚪 监听地址: http://0.0.0.0:5176/
+echo 📍 本地访问: http://localhost:5173/
+echo 🌐 网络访问: http://%LOCAL_IP%:5173/
+echo 🚪 监听地址: http://0.0.0.0:5173/
 echo.
 echo 💡 按 Ctrl+C 停止预览服务器
 echo.
 echo ==========================================
 echo.
-call npm run preview -- --host 0.0.0.0 --port 5176
+call pnpm run preview --host 0.0.0.0 --port 5173
 goto :end
 
 REM ========== 选项 4: 安装/更新依赖 ==========
@@ -232,7 +249,7 @@ echo.
 echo 📦 安装/更新依赖...
 echo ==========================================
 echo.
-call npm install
+call pnpm install
 if !errorlevel! equ 0 (
     echo.
     echo ✅ 依赖安装/更新完成！
@@ -300,15 +317,15 @@ echo ==========================================
 echo 🌐 项目地址:
 echo ==========================================
 echo   - GitHub: https://github.com/wing/wing-react
-echo   - 本地: http://localhost:5176/
+echo   - 本地: http://localhost:5173/
 echo.
 echo ==========================================
 echo 快捷命令:
 echo ==========================================
-echo   npm run dev      - 启动开发服务器
-echo   npm run build    - 构建生产版本
-echo   npm run preview  - 预览生产版本
-echo   npm install      - 安装依赖
+echo   pnpm dev      - 启动开发服务器
+echo   pnpm run build   - 构建生产版本
+echo   pnpm run preview  - 预览生产版本
+echo   pnpm install      - 安装依赖
 echo.
 exit /b 0
 
