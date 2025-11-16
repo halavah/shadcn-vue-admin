@@ -7,21 +7,41 @@ REM 作者: AI Assistant
 REM 创建时间: 2025-10-27
 REM 版本: v1.0.0
 
-REM 临时设置 Node.js v22.19.0 环境 (仅影响当前批处理会话)
-set "NODE_PATH=C:\Users\troyesivens\.nvm\versions\node\v22.19.0"
-set "PATH=C:\Users\troyesivens\.nvm\versions\node\v22.19.0;%PATH%"
+REM 使用 nvm 动态切换到任意 v22 版本的 Node.js (仅影响当前批处理会话)
+echo 🔍 检查 Node.js v22 版本...
 
-REM 检查 Node.js v22.19.0 是否存在
-if not exist "C:\Users\troyesivens\.nvm\versions\node\v22.19.0\node.exe" (
-    echo ❌ Node.js v22.19.0 未找到
-    echo 💡 请先安装 Node.js v22.19.0: nvm install 22.19.0
-    echo 💡 或在 Windows 上使用 nvm-windows: https://github.com/coreybutler/nvm-windows
+REM 检查 nvm 是否可用
+nvm version >nul 2>&1
+if !errorlevel! neq 0 (
+    echo ❌ nvm 未找到或不可用
+    echo 💡 请确保已安装 nvm 并添加到 PATH
+    echo 💡 Windows 用户可安装 nvm-windows: https://github.com/coreybutler/nvm-windows
     pause
     exit /b 1
 )
 
-echo 🔄 临时切换到 Node.js v22.19.0 (仅影响当前批处理会话)
-for /f "tokens=*" %%a in ('C:\Users\troyesivens\.nvm\versions\node\v22.19.0\node.exe --version') do set "NODE_VERSION=%%a"
+REM 检查是否有 v22 版本可用
+nvm list 22 >nul 2>&1
+if !errorlevel! neq 0 (
+    echo ❌ 未找到任何 Node.js v22 版本，正在安装最新的 v22 版本...
+    nvm install 22
+    if !errorlevel! neq 0 (
+        echo ❌ 安装失败，请检查网络连接
+        pause
+        exit /b 1
+    )
+)
+
+echo 🔄 切换到 Node.js v22 版本 (仅影响当前批处理会话)
+nvm use 22
+if !errorlevel! neq 0 (
+    echo ❌ 无法切换到 Node.js v22 版本
+    pause
+    exit /b 1
+)
+
+REM 显示当前 Node.js 版本
+for /f "tokens=*" %%a in ('node --version') do set "NODE_VERSION=%%a"
 echo 当前版本: %NODE_VERSION%
 
 echo.

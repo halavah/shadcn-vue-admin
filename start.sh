@@ -5,18 +5,19 @@
 # 创建时间: 2025-10-26
 # 版本: v1.0.0
 
-# 加载 nvm 并临时切换到 Node.js v22.19.0
+# 加载 nvm 并临时切换到任意 v22 版本的 Node.js
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
-# 检查 Node.js v22.19.0 是否存在
-if ! nvm ls 22.19.0 >/dev/null 2>&1; then
-    echo "❌ Node.js v22.19.0 未找到，正在安装..."
-    nvm install 22.19.0
+# 检查是否有任意 v22 版本的 Node.js 可用
+echo "🔍 检查 Node.js v22 版本..."
+if ! nvm ls 22 >/dev/null 2>&1; then
+    echo "❌ 未找到任何 Node.js v22 版本，正在安装最新的 v22 版本..."
+    nvm install 22
 fi
 
-echo "🔄 临时切换到 Node.js v22.19.0 (仅影响当前shell会话)"
-nvm use 22.19.0
+echo "🔄 切换到 Node.js v22 版本 (仅影响当前shell会话)"
+nvm use 22
 
 echo "🚀 ShadCn Pro 应用启动脚本"
 echo "=================================="
