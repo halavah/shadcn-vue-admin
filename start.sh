@@ -5,6 +5,19 @@
 # 创建时间: 2025-10-26
 # 版本: v1.0.0
 
+# 加载 nvm 并临时切换到 Node.js v22.19.0
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+# 检查 Node.js v22.19.0 是否存在
+if ! nvm ls 22.19.0 >/dev/null 2>&1; then
+    echo "❌ Node.js v22.19.0 未找到，正在安装..."
+    nvm install 22.19.0
+fi
+
+echo "🔄 临时切换到 Node.js v22.19.0 (仅影响当前shell会话)"
+nvm use 22.19.0
+
 echo "🚀 ShadCn Pro 应用启动脚本"
 echo "=================================="
 echo ""
@@ -63,10 +76,10 @@ check_project_status() {
     fi
 
     # 检查端口占用
-    if lsof -Pi :5176 -sTCP:LISTEN -t >/dev/null 2>&1; then
-        echo "  📡 端口 5176 已被占用"
+    if lsof -Pi :5173 -sTCP:LISTEN -t >/dev/null 2>&1; then
+        echo "  📡 端口 5173 已被占用"
     else
-        echo "  📡 端口 5176 可用"
+        echo "  📡 端口 5173 可用"
     fi
 
     echo ""
@@ -75,7 +88,7 @@ check_project_status() {
 # 检查是否安装了依赖
 if [ ! -d "node_modules" ]; then
     echo "📦 首次运行，正在安装依赖..."
-    npm install
+    pnpm install
     echo ""
 fi
 
@@ -84,11 +97,11 @@ check_project_status
 
 # 显示菜单
 echo "请选择要执行的操作："
-echo "1) 启动开发服务器 (npm run dev) [推荐]"
-echo "2) 构建生产版本 (npm run build)"
-echo "3) 预览生产版本 (npm run preview)"
-echo "4) 安装/更新依赖 (npm install)"
-echo "5) 清理缓存和重置 (npm run clean)"
+echo "1) 启动开发服务器 (pnpm dev) [推荐]"
+echo "2) 构建生产版本 (pnpm run build)"
+echo "3) 预览生产版本 (pnpm run preview)"
+echo "4) 安装/更新依赖 (pnpm install)"
+echo "5) 清理缓存和重置 (pnpm run clean)"
 echo "6) 退出"
 echo ""
 echo "💡 提示: 直接按 Enter 键使用默认选项 1"
@@ -102,31 +115,31 @@ case $choice in
     1)
         echo "🔧 启动开发服务器..."
 
-        # 强制关闭 5176 端口
-        echo "🔍 检查端口 5176 占用情况..."
-        PID=$(lsof -ti:5176)
+        # 强制关闭 5173 端口
+        echo "🔍 检查端口 5173 占用情况..."
+        PID=$(lsof -ti:5173)
         if [ ! -z "$PID" ]; then
-            echo "⚠️  端口 5176 被进程 $PID 占用，正在关闭..."
+            echo "⚠️  端口 5173 被进程 $PID 占用，正在关闭..."
             kill -9 $PID 2>/dev/null
             sleep 1
-            echo "✅ 端口 5176 已释放"
+            echo "✅ 端口 5173 已释放"
         else
-            echo "✅ 端口 5176 可用"
+            echo "✅ 端口 5173 可用"
         fi
         echo ""
 
-        echo "📍 本地访问: http://localhost:5176/"
-        echo "🌐 网络访问: http://$LOCAL_IP:5176/"
-        echo "🚪 监听地址: http://0.0.0.0:5176/"
+        echo "📍 本地访问: http://localhost:5173/"
+        echo "🌐 网络访问: http://$LOCAL_IP:5173/"
+        echo "🚪 监听地址: http://0.0.0.0:5173/"
         echo "💡 按 Ctrl+C 停止服务器"
-        echo "💡 开发服务器运行在端口 5176 (0.0.0.0)"
+        echo "💡 开发服务器运行在端口 5173 (0.0.0.0)"
         echo "🔓 认证已禁用，可直接使用所有功能"
         echo ""
-        npm run dev -- --host 0.0.0.0 --port 5176
+        pnpm dev --host 0.0.0.0 --port 5173
         ;;
     2)
         echo "🏗️  构建生产版本..."
-        npm run build
+        pnpm run build
         echo ""
         if [ $? -eq 0 ]; then
             echo "✅ 构建完成！构建文件位于 dist/ 目录"
@@ -140,33 +153,33 @@ case $choice in
         echo "👀 预览生产版本..."
         if [ ! -d "dist" ]; then
             echo "❌ 未找到构建文件，请先运行构建命令 (选项 2)"
-            echo "💡 或直接运行: npm run build && npm run preview"
+            echo "💡 或直接运行: pnpm run build && pnpm run preview"
             exit 1
         fi
 
-        # 强制关闭 5176 端口
-        echo "🔍 检查端口 5176 占用情况..."
-        PID=$(lsof -ti:5176)
+        # 强制关闭 5173 端口
+        echo "🔍 检查端口 5173 占用情况..."
+        PID=$(lsof -ti:5173)
         if [ ! -z "$PID" ]; then
-            echo "⚠️  端口 5176 被进程 $PID 占用，正在关闭..."
+            echo "⚠️  端口 5173 被进程 $PID 占用，正在关闭..."
             kill -9 $PID 2>/dev/null
             sleep 1
-            echo "✅ 端口 5176 已释放"
+            echo "✅ 端口 5173 已释放"
         else
-            echo "✅ 端口 5176 可用"
+            echo "✅ 端口 5173 可用"
         fi
         echo ""
 
-        echo "📍 本地访问: http://localhost:5176/"
-        echo "🌐 网络访问: http://$LOCAL_IP:5176/"
-        echo "🚪 监听地址: http://0.0.0.0:5176/"
+        echo "📍 本地访问: http://localhost:5173/"
+        echo "🌐 网络访问: http://$LOCAL_IP:5173/"
+        echo "🚪 监听地址: http://0.0.0.0:5173/"
         echo "💡 按 Ctrl+C 停止预览服务器"
         echo ""
-        npm run preview -- --host 0.0.0.0 --port 5176
+        pnpm run preview --host 0.0.0.0 --port 5173
         ;;
     4)
         echo "📦 安装/更新依赖..."
-        npm install
+        pnpm install
         echo ""
         if [ $? -eq 0 ]; then
             echo "✅ 依赖安装/更新完成！"
@@ -198,7 +211,7 @@ case $choice in
         echo ""
         echo "🌐 项目地址:"
         echo "  - GitHub: https://github.com/wing/wing-react"
-        echo "  - 本地: http://localhost:5176/"
+        echo "  - 本地: http://localhost:5173/"
         echo ""
         exit 0
         ;;
