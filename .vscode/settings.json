@@ -51,5 +51,16 @@
     "src/plugins/i18n"
   ],
   "i18n-ally.keystyle": "flat",
-  "claudeCodeChat.permissions.yoloMode": true
+  "cSpell.words": [
+    "formkit",
+    "unovis",
+    "iconify",
+    "unplugin",
+    "tanstack",
+    "Whbbit1999",
+    "autoplay",
+    "reka",
+    "vaul",
+    "persistedstate"
+  ]
 }
